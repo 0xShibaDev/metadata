@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Connect to SQLite database
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "nft_metadata.db")
-API_URL = "https://api.shibaville.io/image/"
+API_URL = "https://api.shibaville.io/ville/image/"
 LOGO_FILE = os.path.join(BASE_DIR, "logo.png")
 LOGO = img = Image.open(LOGO_FILE)
 
