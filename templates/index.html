@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShibaVille Metadata</title>
     <style>
+      .header {
+        margin: 16px;
+      }
       .card {
         border: 1px solid #ccc;
         border-radius: 8px;
@@ -35,16 +38,64 @@
         width: 80px;
         height: 80px;
       }
+      .metadataUrl{
+        display: block;
+        margin: 16px;
+        padding: 16px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+      }
+      .filters {
+        margin: 16px;
+      }
     </style>
   </head>
   <body>
-    <h1>ShibaVille Metadata API v0.1</h1>
-    <code>
-      Metadata: https://api.shibaville.io/ville/{NFTID} Image:
-      https://api.shibaville.io/ville/image/{NFTID}
+    <h1 class="header">ShibaVille Metadata API v0.1</h1>
+    <code class="metadataUrl">
+      Usage: <br>
+      Metadata: https://api.shibaville.io/ville/{NFTID} <br>
+      Image:https://api.shibaville.io/ville/image/{NFTID}
     </code>
     <!-- Filters -->
-
+    <form action="/" method="get" class="filters">
+      <label for="region">Region:</label>
+      <select name="region" id="region">
+        <option value="all" {% if request.args.get('region') == 'all' %}selected{% endif %}>All</option>
+        <option value="Barkadia Plains" {% if request.args.get('region') == 'Barkadia Plains' %}selected{% endif %}>Barkadia Plains</option>
+        <option value="Howlheim Peaks" {% if request.args.get('region') == 'Howlheim Peaks' %}selected{% endif %}>Howlheim Peaks</option>
+        <option value="Pawcific Isles" {% if request.args.get('region') == 'Pawcific Isles' %}selected{% endif %}>Pawcific Isles</option>
+        <option value="Emberfang Desert" {% if request.args.get('region') == 'Emberfang Desert' %}selected{% endif %}>Emberfang Desert</option>
+        <option value="Furrenwald Forest" {% if request.args.get('region') == 'Furrenwald Forest' %}selected{% endif %}>Furrenwald Forest</option>
+        <option value="Tailwind Steppe" {% if request.args.get('region') == 'Tailwind Steppe' %}selected{% endif %}>Tailwind Steppe</option>
+        <option value="Furrenace Crater" {% if request.args.get('region') == 'Furrenace Crater' %}selected{% endif %}>Furrenace Crater</option>
+        <option value="Moonhowl Marshes" {% if request.args.get('region') == 'Moonhowl Marshes' %}selected{% endif %}>Moonhowl Marshes</option>
+        <option value="Cloudpaw Heights" {% if request.args.get('region') == 'Cloudpaw Heights' %}selected{% endif %}>Cloudpaw Heights</option>
+      </select>
+      <label for="trait">Trait:</label>
+      <select name="trait_name" id="trait_name">
+        <option value="all" {% if request.args.get('trait_name') == 'all' %}selected{% endif %}>All</option>
+        <option value="Conqueror" {% if request.args.get('trait_name') == 'Conqueror' %}selected{% endif %}>Conqueror</option>
+        <option value="GemSeeker" {% if request.args.get('trait_name') == 'GemSeeker' %}selected{% endif %}>GemSeeker</option>
+        <option value="Negociator" {% if request.args.get('trait_name') == 'Negociator' %}selected{% endif %}>Negociator</option>
+        <option value="Effective" {% if request.args.get('trait_name') == 'Effective' %}selected{% endif %}>Effective</option>
+        <option value="Farmer" {% if request.args.get('trait_name') == 'Farmer' %}selected{% endif %}>Farmer</option>
+        <option value="Miner" {% if request.args.get('trait_name') == 'Miner' %}selected{% endif %}>Miner</option>
+        <option value="Forester" {% if request.args.get('trait_name') == 'Forester' %}selected{% endif %}>Forester</option>
+        <option value="Stonecutter" {% if request.args.get('trait_name') == 'Stonecutter' %}selected{% endif %}>Stonecutter</option>
+      </select>
+      <label for="min">First ID:</label>
+      <input type="number" name="min" id="min" value="{{ request.args.get('min', 1) }}" />
+      <label for="max">Last ID:</label>
+      <input
+        type="number"
+        name="max"
+        id="max"
+        value="{{ request.args.get('max', 100) }}"
+      />
+      <button type="submit">Filter</button>
+      <button type="reset" onclick="window.location.href='/'">Reset</button>
+    </form>
     <!-- NFT Cards -->
     <div id="nft-cards" class="nftlist">
       {% for nft in nfts %}

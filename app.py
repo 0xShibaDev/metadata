@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_file, render_template
+from flask import Flask, jsonify, request, send_file, render_template
 import sqlite3
 from PIL import Image, ImageDraw, ImageFont
 import io
@@ -30,17 +30,14 @@ def fetch_metadata_from_db(nft_id):
         }
     return None
 
-def fetch_all_nfts_from_db():
+def fetch_all_nfts_from_db(minRange, maxRange):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM metadata order by id asc")
-    nft_ids = [row[0] for row in cursor.fetchmany(500)]
+    nft_ids = [row[0] for row in cursor.fetchmany(int(maxRange)) if row[0] >= int(minRange)]
     print(nft_ids)
     conn.close()
     return [fetch_metadata_from_db(nft_id) for nft_id in nft_ids if nft_id is not None]
-
-
-
 # Route to fetch metadata
 @app.route("/ville/<int:nft_id>", methods=["GET"])
 def get_metadata(nft_id):
@@ -80,10 +77,26 @@ def generate_image(nft_id):
     img_byte_arr.seek(0)
     return send_file(img_byte_arr, mimetype="image/png")
 
-
 @app.route("/")
 def home():
-    # Get 500 NFTs from the database
-    nfts = fetch_all_nfts_from_db()
+    # Get query parameters
+    trait_name = request.args.get("trait_name")
+    region = request.args.get("region")
+    minRange = request.args.get("min")
+    maxRange = request.args.get("max")
+
+    if not minRange:
+        minRange = 0
+    if not maxRange:
+        maxRange = 500
+
+    # Get all NFTs from the database
+    nfts = fetch_all_nfts_from_db(int(minRange) , int(maxRange))
+
+    # Filter NFTs by trait_name or region if provided
+    if trait_name and trait_name != "all":
+        nfts = [nft for nft in nfts if any(trait["trait"] == trait_name for trait in nft["attributes"])]
+    if region and region != "all":
+        nfts = [nft for nft in nfts if nft["region"] == region]
 
     return render_template("index.html", nfts=nfts)
